@@ -87,6 +87,33 @@ dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
     return dmExtension::RESULT_OK;
 }
 
+dmExtension::Result OnUpdateMyExtension(dmExtension::Params* params)
+{
+    printf("OnUpdateMyExtension\n");
+    return dmExtension::RESULT_OK;
+}
+
+void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* event)
+{
+    switch(event->m_Event)
+    {
+        case dmExtension::EVENT_ID_ACTIVATEAPP:
+            printf("OnEventMyExtension - EVENT_ID_ACTIVATEAPP\n");
+            break;
+        case dmExtension::EVENT_ID_DEACTIVATEAPP:
+            printf("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
+            break;
+        case dmExtension::EVENT_ID_INCONIFYAPP:
+            printf("OnEventMyExtension - EVENT_ID_INCONIFYAPP\n");
+            break;
+        case dmExtension::EVENT_ID_DEICONIFYAPP:
+            printf("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
+            break;
+        default:
+            printf("OnEventMyExtension - Unknown event id\n");
+            break;
+    }
+}
 
 // Defold SDK uses a macro for setting up extension entry points:
 //
@@ -94,4 +121,4 @@ dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
 
 // MyExtension is the C++ symbol that holds all relevant extension data.
 // It must match the name field in the `ext.manifest`
-DM_DECLARE_EXTENSION(MyExtension, LIB_NAME, AppInitializeMyExtension, AppFinalizeMyExtension, InitializeMyExtension, 0, 0, FinalizeMyExtension)
+DM_DECLARE_EXTENSION(MyExtension, LIB_NAME, AppInitializeMyExtension, AppFinalizeMyExtension, InitializeMyExtension, OnUpdateMyExtension, OnEventMyExtension, FinalizeMyExtension)
