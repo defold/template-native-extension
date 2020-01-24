@@ -66,6 +66,7 @@ static void LuaInit(lua_State* L)
 
 dmExtension::Result AppInitializeMyExtension(dmExtension::AppParams* params)
 {
+    dmLogInfo("AppInitializeMyExtension\n");
     return dmExtension::RESULT_OK;
 }
 
@@ -73,23 +74,25 @@ dmExtension::Result InitializeMyExtension(dmExtension::Params* params)
 {
     // Init Lua
     LuaInit(params->m_L);
-    printf("Registered %s Extension\n", MODULE_NAME);
+    dmLogInfo("Registered %s Extension\n", MODULE_NAME);
     return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result AppFinalizeMyExtension(dmExtension::AppParams* params)
 {
+    dmLogInfo("AppFinalizeMyExtension\n");
     return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
 {
+    dmLogInfo("FinalizeMyExtension\n");
     return dmExtension::RESULT_OK;
 }
 
 dmExtension::Result OnUpdateMyExtension(dmExtension::Params* params)
 {
-    printf("OnUpdateMyExtension\n");
+    dmLogInfo("OnUpdateMyExtension\n");
     return dmExtension::RESULT_OK;
 }
 
@@ -98,19 +101,19 @@ void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* e
     switch(event->m_Event)
     {
         case dmExtension::EVENT_ID_ACTIVATEAPP:
-            printf("OnEventMyExtension - EVENT_ID_ACTIVATEAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ACTIVATEAPP\n");
             break;
         case dmExtension::EVENT_ID_DEACTIVATEAPP:
-            printf("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
             break;
         case dmExtension::EVENT_ID_INCONIFYAPP:
-            printf("OnEventMyExtension - EVENT_ID_INCONIFYAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_INCONIFYAPP\n");
             break;
         case dmExtension::EVENT_ID_DEICONIFYAPP:
-            printf("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
             break;
         default:
-            printf("OnEventMyExtension - Unknown event id\n");
+            dmLogWarning("OnEventMyExtension - Unknown event id\n");
             break;
     }
 }
