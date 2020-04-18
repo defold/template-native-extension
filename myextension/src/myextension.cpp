@@ -106,8 +106,8 @@ void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* e
         case dmExtension::EVENT_ID_DEACTIVATEAPP:
             dmLogInfo("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
             break;
-        case dmExtension::EVENT_ID_INCONIFYAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_INCONIFYAPP\n");
+        case dmExtension::EVENT_ID_ICONIFYAPP:
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ICONIFYAPP\n");
             break;
         case dmExtension::EVENT_ID_DEICONIFYAPP:
             dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
