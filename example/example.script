@@ -1,7 +1,7 @@
 function init(self)
 	local s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	local rot_s = myextension.rot13(s)
-	print(rot_s) --> nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM
+	local reverse_s = myextension.reverse(s)
+	print(reverse_s) --> ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba
 end
 
 function final(self)

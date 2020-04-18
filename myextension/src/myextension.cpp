@@ -5,42 +5,27 @@
 
 // include the Defold SDK
 #include <dmsdk/sdk.h>
-#include <stdlib.h>
 
-static int Rot13(lua_State* L)
+static int Reverse(lua_State* L)
 {
-    int top = lua_gettop(L);
+    // The number of expected items to be on the Lua stack
+    // once this struct goes out of scope
+    DM_LUA_STACK_CHECK(L, 1);
 
     // Check and get parameter string from stack
-    const char* str = luaL_checkstring(L, 1);
+    char* str = (char*)luaL_checkstring(L, 1);
 
-    // Allocate new string
+    // Reverse the string
     int len = strlen(str);
-    char *rot = (char *) malloc(len + 1);
-
-    // Iterate over the parameter string and create rot13 string
-    for(int i = 0; i <= len; i++) {
-        const char c = str[i];
-        if((c >= 'A' && c <= 'M') || (c >= 'a' && c <= 'm')) {
-            // Between A-M just add 13 to the char.
-            rot[i] = c + 13;
-        } else if((c >= 'N' && c <= 'Z') || (c >= 'n' && c <= 'z')) {
-            // If rolling past 'Z' which happens below 'M', wrap back (subtract 13)
-            rot[i] = c - 13;
-        } else {
-            // Leave character intact
-            rot[i] = c;
-        }
+    for(int i = 0; i < len / 2; i++) {
+        const char a = str[i];
+        const char b = str[len - i - 1];
+        str[i] = b;
+        str[len - i - 1] = a;
     }
 
-    // Put the rotated string on the stack
-    lua_pushstring(L, rot);
-
-    // Free string memory. Lua has a copy by now.
-    free(rot);
-
-    // Assert that there is one item on the stack.
-    assert(top + 1 == lua_gettop(L));
+    // Put the reverse string on the stack
+    lua_pushstring(L, str);
 
     // Return 1 item
     return 1;
@@ -49,7 +34,7 @@ static int Rot13(lua_State* L)
 // Functions exposed to Lua
 static const luaL_reg Module_methods[] =
 {
-    {"rot13", Rot13},
+    {"reverse", Reverse},
     {0, 0}
 };
 
