@@ -49,56 +49,56 @@ static void LuaInit(lua_State* L)
     assert(top == lua_gettop(L));
 }
 
-dmExtension::Result AppInitializeMyExtension(dmExtension::AppParams* params)
+static dmExtension::Result AppInitializeMyExtension(dmExtension::AppParams* params)
 {
-    dmLogInfo("AppInitializeMyExtension\n");
+    dmLogInfo("AppInitializeMyExtension");
     return dmExtension::RESULT_OK;
 }
 
-dmExtension::Result InitializeMyExtension(dmExtension::Params* params)
+static dmExtension::Result InitializeMyExtension(dmExtension::Params* params)
 {
     // Init Lua
     LuaInit(params->m_L);
-    dmLogInfo("Registered %s Extension\n", MODULE_NAME);
+    dmLogInfo("Registered %s Extension", MODULE_NAME);
     return dmExtension::RESULT_OK;
 }
 
-dmExtension::Result AppFinalizeMyExtension(dmExtension::AppParams* params)
+static dmExtension::Result AppFinalizeMyExtension(dmExtension::AppParams* params)
 {
-    dmLogInfo("AppFinalizeMyExtension\n");
+    dmLogInfo("AppFinalizeMyExtension");
     return dmExtension::RESULT_OK;
 }
 
-dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
+static dmExtension::Result FinalizeMyExtension(dmExtension::Params* params)
 {
-    dmLogInfo("FinalizeMyExtension\n");
+    dmLogInfo("FinalizeMyExtension");
     return dmExtension::RESULT_OK;
 }
 
-dmExtension::Result OnUpdateMyExtension(dmExtension::Params* params)
+static dmExtension::Result OnUpdateMyExtension(dmExtension::Params* params)
 {
-    dmLogInfo("OnUpdateMyExtension\n");
+    dmLogInfo("OnUpdateMyExtension");
     return dmExtension::RESULT_OK;
 }
 
-void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* event)
+static void OnEventMyExtension(dmExtension::Params* params, const dmExtension::Event* event)
 {
     switch(event->m_Event)
     {
         case dmExtension::EVENT_ID_ACTIVATEAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_ACTIVATEAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ACTIVATEAPP");
             break;
         case dmExtension::EVENT_ID_DEACTIVATEAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_DEACTIVATEAPP");
             break;
         case dmExtension::EVENT_ID_ICONIFYAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_ICONIFYAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ICONIFYAPP");
             break;
         case dmExtension::EVENT_ID_DEICONIFYAPP:
-            dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP\n");
+            dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP");
             break;
         default:
-            dmLogWarning("OnEventMyExtension - Unknown event id\n");
+            dmLogWarning("OnEventMyExtension - Unknown event id");
             break;
     }
 }
