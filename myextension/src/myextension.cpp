@@ -81,9 +81,9 @@ static int SendMessage(lua_State* L)
     dmMessage::URL receiver;
     dmGameObject::HInstance caller_instance = dmScript::CheckGOInstance(L);
     dmGameObject::HCollection collection = dmGameObject::GetCollection(caller_instance);
-    sender.m_Path = dmGameObject::GetIdentifier(caller_instance);;
+    sender.m_Path = dmGameObject::GetIdentifier(caller_instance);
     sender.m_Socket = dmGameObject::GetMessageSocket(collection);
-    receiver.m_Path = dmGameObject::GetIdentifier(caller_instance);;
+    receiver.m_Path = dmGameObject::GetIdentifier(caller_instance);
     receiver.m_Socket = dmGameObject::GetMessageSocket(collection);
 
     // post notification to receiver
