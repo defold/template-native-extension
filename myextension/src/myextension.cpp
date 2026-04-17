@@ -6,6 +6,13 @@
 // include the Defold SDK
 #include <dmsdk/sdk.h>
 
+// generated from chat_ddf.proto
+#include "chat_ddf.h"
+
+// Queue of ChatMessage instances
+static dmArray<dmChatDDF::ChatMessage*> g_ChatMessageQueue;
+
+
 static int Reverse(lua_State* L)
 {
     // The number of expected items to be on the Lua stack
@@ -31,10 +38,89 @@ static int Reverse(lua_State* L)
     return 1;
 }
 
+// The two functions below show how to work with protobuf messages.
+//
+// They show a fictional example of a chat application where messages can be
+// sent, queued and later checked. The example doesn't actually send the
+// messages anywhere, it simply puts the message in a queue and sends a
+// notification to the calling script. The calling script can then get the
+// message as a Lua table
+// Note: The DDF acronym stands for Defold Data Format, but is in fact protobuf
+
+// SendMessage
+// This function will "send" a message by allocating a dmChatDDF::ChatMessage
+// instance and a copy of the message text and put it in a queue.
+// The function will also post a dmChatDDF::OnMessage to the calling script
+// using dmGameObject::PostDDF() to notify the script that there are waiting
+// messages
+static int SendMessage(lua_State* L)
+{
+    DM_LUA_STACK_CHECK(L, 0);
+
+    // allocate dmChatDDF::ChatMessage instance
+    dmChatDDF::ChatMessage* chat_message = (dmChatDDF::ChatMessage*)malloc(sizeof(dmChatDDF::ChatMessage));
+    chat_message->m_From = dmScript::CheckHash(L, 1);
+    chat_message->m_To = dmScript::CheckHash(L, 2);
+    // copy message text
+    size_t text_size;
+    const char* text = luaL_checklstring(L, 3, &text_size);
+    char* text_copy = (char*)malloc(text_size + 1);
+    dmStrlCpy(text_copy, text, text_size + 1);
+    chat_message->m_Text = text_copy;
+
+    // push chat message to queue
+    if (g_ChatMessageQueue.Full())
+    {
+        g_ChatMessageQueue.OffsetCapacity(1);
+    }
+    g_ChatMessageQueue.Push(chat_message);
+
+    // construct a sender and receiver URL for use when posting the message
+    // the sender and receiver will be the URL of the calling game object
+    dmMessage::URL sender;
+    dmMessage::URL receiver;
+    dmGameObject::HInstance caller_instance = dmScript::CheckGOInstance(L);
+    dmGameObject::HCollection collection = dmGameObject::GetCollection(caller_instance);
+    sender.m_Path = dmGameObject::GetIdentifier(caller_instance);
+    sender.m_Socket = dmGameObject::GetMessageSocket(collection);
+    receiver.m_Path = dmGameObject::GetIdentifier(caller_instance);
+    receiver.m_Socket = dmGameObject::GetMessageSocket(collection);
+
+    // post notification to receiver
+    dmChatDDF::OnMessage on_message;
+    dmGameObject::Result result = dmGameObject::PostDDF(&on_message, &sender, &receiver, 0, false);
+
+    return 0;
+}
+
+// This function will take the most recently added message from the queue and
+// return it as a Lua table. Conversion is done using dmScript::PushDDF()
+// The message is freed when it is taken from the queue.
+static int NextMessage(lua_State* L)
+{
+    DM_LUA_STACK_CHECK(L, 1);
+
+    if (g_ChatMessageQueue.Empty())
+    {
+        lua_pushnil(L);
+        return 1;
+    }
+
+    dmChatDDF::ChatMessage* chat_message = g_ChatMessageQueue.Back();
+    dmScript::PushDDF(L, dmChatDDF::ChatMessage::m_DDFDescriptor, (const char*)chat_message, false);
+    free((void*)chat_message->m_Text);
+    free((void*)chat_message);
+    g_ChatMessageQueue.Pop();
+
+    return 1;
+}
+
 // Functions exposed to Lua
 static const luaL_reg Module_methods[] =
 {
     {"reverse", Reverse},
+    {"send_message", SendMessage},
+    {"next_message", NextMessage},
     {0, 0}
 };
 
@@ -66,6 +152,16 @@ static dmExtension::Result InitializeMyExtension(dmExtension::Params* params)
 static dmExtension::Result AppFinalizeMyExtension(dmExtension::AppParams* params)
 {
     dmLogInfo("AppFinalizeMyExtension");
+
+    // Remove and free any queued messages
+    while (!g_ChatMessageQueue.Empty())
+    {
+        dmChatDDF::ChatMessage* chat_message = g_ChatMessageQueue.Back();
+        free((void*)chat_message->m_Text);
+        free((void*)chat_message);
+        g_ChatMessageQueue.Pop();
+    }
+
     return dmExtension::RESULT_OK;
 }
 
@@ -96,6 +192,12 @@ static void OnEventMyExtension(dmExtension::Params* params, const dmExtension::E
             break;
         case dmExtension::EVENT_ID_DEICONIFYAPP:
             dmLogInfo("OnEventMyExtension - EVENT_ID_DEICONIFYAPP");
+            break;
+        case dmExtension::EVENT_ID_ENGINE_INITIALIZED:
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ENGINE_INITIALIZED");
+            break;
+        case dmExtension::EVENT_ID_ENGINE_DELETE:
+            dmLogInfo("OnEventMyExtension - EVENT_ID_ENGINE_DELETE");
             break;
         default:
             dmLogWarning("OnEventMyExtension - Unknown event id");

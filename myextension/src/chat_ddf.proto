@@ -1,0 +1,19 @@
+syntax = "proto2";
+package dmChatDDF;
+
+import "ddf/ddf_extensions.proto";
+import "script/ddf_script.proto";
+
+option java_package = "com.dynamo.chat.proto";
+option java_outer_classname = "Chat";
+
+message ChatMessage
+{
+    required uint64 from = 1;
+    required uint64 to = 2;
+    required string text = 3;
+}
+
+message OnMessage
+{
+}
