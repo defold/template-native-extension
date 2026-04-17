@@ -2,6 +2,9 @@ function init(self)
 	local s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	local reverse_s = myextension.reverse(s)
 	print(reverse_s) --> ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba
+
+	-- "send" a message
+	myextension.send_message(hash("batman"), hash("robin"), "Holy Hole in a Doughnut!")
 end
 
 function final(self)
@@ -15,8 +18,11 @@ function update(self, dt)
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+	if message_id == hash("on_message") then
+		-- get the next message and show it
+		local chat_message = myextension.next_message()
+		pprint(chat_message)
+	end
 end
 
 function on_input(self, action_id, action)
